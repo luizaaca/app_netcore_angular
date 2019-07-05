@@ -1,9 +1,8 @@
-﻿using Core.Model.Base;
-
-namespace Core.Model
+﻿namespace Core.Model
 {
-    public class Assunto : EntityBase<int>, IAggregateRoot
+    public enum Assunto
     {
-        public string Descricao { get; set; }
-    }    
+        Administrativo = 1,
+        Condominial = 2
+    }
 }

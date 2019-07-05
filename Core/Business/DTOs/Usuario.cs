@@ -6,5 +6,6 @@
         public string Nome { get; set; }
         public Condominio Condominio { get; set; }
         public TipoUsuario Tipo { get; set; }
+        public int IdCondominio { get; internal set; }
     }
 }

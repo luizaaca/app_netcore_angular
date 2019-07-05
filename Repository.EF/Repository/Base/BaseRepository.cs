@@ -21,10 +21,10 @@ namespace Repository.EF.Repository.Base
             this.context = context;
         }
 
-        public async void AddAsync(T entity)
-            => await context.AddAsync(entity);
+        public void Add(T entity)
+            => context.Add(entity);
 
-        public async void CommitAsync()
+        public async Task CommitAsync()
             => await context.SaveChangesAsync();
 
         public async Task<IEnumerable<T>> FindAllAsync()
@@ -39,20 +39,11 @@ namespace Repository.EF.Repository.Base
         public async Task<IEnumerable<T>> FindByAsync(Query<T> query)
             => await query.TranslateIntoEFQuery(context.Set<T>()).ToListAsync();
 
-        public async void RemoveAsync(T entity)
-        {
-            await Task.Run(() =>
-            {
-                context.Remove(entity);
-            });
-        }
+        public void Remove(T entity)
+            => context.Remove(entity);
 
-        public async void SaveAsync(T entity)
-        {
-            await Task.Run(() =>
-            {
-                context.Update(entity);
-            });
-        }
+        public void Save(T entity)
+            => context.Update(entity);
+
     }
 }

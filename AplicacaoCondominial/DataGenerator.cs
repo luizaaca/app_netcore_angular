@@ -28,17 +28,7 @@ namespace AplicacaoCondominial
                     new Administradora
                     {
                         Nome = "Administradora 3"
-                    });
-
-                context.Assuntos.AddRange(
-                    new Assunto
-                    {
-                        Descricao = "Administrativo"
-                    },
-                    new Assunto
-                    {
-                        Descricao = "Condominial"
-                    });
+                    });               
 
                 context.SaveChanges();
             }

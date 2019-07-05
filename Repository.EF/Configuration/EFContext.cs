@@ -8,7 +8,6 @@ namespace Repository.EF.Configuration
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Administradora> Administradoras { get; set; }
         public DbSet<Condominio> Condominios { get; set; }
-        public DbSet<Assunto> Assuntos { get; set; }
 
         public EFContext(DbContextOptions contextOptions) : base(contextOptions)
         {
@@ -19,7 +18,6 @@ namespace Repository.EF.Configuration
             Mappings.UsuarioMap(modelBuilder.Entity<Usuario>());
             Mappings.AdministradoraMap(modelBuilder.Entity<Administradora>());
             Mappings.CondominioMap(modelBuilder.Entity<Condominio>());
-            Mappings.AssuntoMap(modelBuilder.Entity<Assunto>());
 
             base.OnModelCreating(modelBuilder);
         }

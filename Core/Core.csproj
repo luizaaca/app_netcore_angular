@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Repository\IAssuntoRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Business\Wraps\Comunicacao\" />
     <Folder Include="Business\Wraps\Configuracao\" />
   </ItemGroup>

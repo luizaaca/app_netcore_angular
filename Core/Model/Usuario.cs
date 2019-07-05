@@ -5,6 +5,7 @@ namespace Core.Model
     public class Usuario : EntityBase<int>, IAggregateRoot
     {
         public string Nome { get; set; }
+        public int IdCondominio { get; set; }
         public Condominio Condominio { get; set; }
         public TipoUsuario Tipo { get; set; }
     }

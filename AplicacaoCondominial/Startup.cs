@@ -30,7 +30,6 @@ namespace AplicacaoCondominial
             services.AddDbContext<EFContext>(opt => opt.UseInMemoryDatabase("TestDB"));
 
             services.AddTransient<IAdministradoraRepository, AdministradoraRepository>();
-            services.AddTransient<IAssuntoRepository, AssuntoRepository>();
             services.AddTransient<ICondominioRepository, CondominioRepository>();
             services.AddTransient<IUsuarioRepository, UsuarioRepository>();
 
