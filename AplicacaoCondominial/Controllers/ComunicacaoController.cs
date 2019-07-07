@@ -18,8 +18,8 @@ namespace AplicacaoCondominial.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> Comunicado(Comunicado comunicado)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Comunicado([FromBody]Comunicado comunicado)
         {
             var response = await _comunicacaoBusiness
                                     .EnviarComunicadoAsync(

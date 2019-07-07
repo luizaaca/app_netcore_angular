@@ -7,16 +7,16 @@ using Repository.EF.Repository;
 
 namespace AplicacaoCondominial.Test
 {
-    public static class Init
+    public class Config
     {
-        public static readonly EFContext Context;
-        public static readonly IConfiguracaoBusiness ConfiguracaoBusiness;
-        public static readonly IComunicacaoBusiness ComunicacaoBusiness;
+        public readonly EFContext Context;
+        public readonly IConfiguracaoBusiness ConfiguracaoBusiness;
+        public readonly IComunicacaoBusiness ComunicacaoBusiness;
 
-        static Init()
+        public Config()
         {
             var services = new ServiceCollection();
-            services.AddDbContext<EFContext>(opt => opt.UseInMemoryDatabase("TestDB"));
+            services.AddDbContext<EFContext>(opt => opt.UseInMemoryDatabase("TestDB"), ServiceLifetime.Singleton);
 
             services.AddTransient<IAdministradoraRepository, AdministradoraRepository>();
             services.AddTransient<ICondominioRepository, CondominioRepository>();
@@ -29,6 +29,7 @@ namespace AplicacaoCondominial.Test
 
             Context = serviceProvider.GetService<EFContext>();
             ConfiguracaoBusiness = serviceProvider.GetService<IConfiguracaoBusiness>();
+            ComunicacaoBusiness = serviceProvider.GetService<IComunicacaoBusiness>();
         }
     }
 }

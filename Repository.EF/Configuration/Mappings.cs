@@ -10,8 +10,8 @@ namespace Repository.EF.Configuration
             map.HasKey(p => p.Id);
             
             map.HasOne(c => c.Condominio)
-                .WithOne()
-                .HasForeignKey<Usuario>(u => u.IdCondominio);
+                .WithMany()
+                .HasForeignKey(u => u.IdCondominio);
         }
 
         internal static void AdministradoraMap(EntityTypeBuilder<Administradora> map)
@@ -23,9 +23,13 @@ namespace Repository.EF.Configuration
         {
             map.HasKey(p => p.Id);
             
-            map.HasOne(u => u.Responsavel)
+            //map.HasOne(u => u.Responsavel)
+            //    .WithOne()
+            //    .HasForeignKey<Condominio>(c => c.IdResponsavel);
+
+            map.HasOne(u => u.Administradora)
                 .WithOne()
-                .HasForeignKey<Condominio>(c => c.IdResponsavel);
+                .HasForeignKey<Condominio>(c => c.IdAdministradora);
         }
     }
 }

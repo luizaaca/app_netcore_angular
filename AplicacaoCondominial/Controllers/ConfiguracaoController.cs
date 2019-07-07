@@ -90,8 +90,8 @@ namespace AplicacaoCondominial.Controllers
             return Ok(response.Result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Condominio(Condominio model)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Condominio([FromBody]Condominio model)
         {
             if (model == null)
                 return BadRequest(model);
@@ -102,11 +102,11 @@ namespace AplicacaoCondominial.Controllers
             if (!response.Success)
                 return StatusCode(500, response.Message);
 
-            return Ok();
+            return Ok(response.Result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Usuario(Usuario model)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Usuario([FromBody]Usuario model)
         {
             if (model == null)
                 return BadRequest(model);
@@ -117,7 +117,7 @@ namespace AplicacaoCondominial.Controllers
             if (!response.Success)
                 return StatusCode(500, response.Message);
 
-            return Ok();
+            return Ok(response.Result);
         }
     }
 }

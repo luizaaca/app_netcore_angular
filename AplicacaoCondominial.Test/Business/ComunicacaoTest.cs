@@ -8,70 +8,71 @@ namespace AplicacaoCondominial.Test.Business
 {
     public class ComunicacaoTest
     {
-        [Fact]
-        public async void MensagemAdministrativaEnviadaCorretamente()
+        Config config;
+
+        public ComunicacaoTest()
+        {
+            config = new Config();
+        }
+
+        private void Salvar<T>(T objeto) where T : class
+        {
+            config.Context.Add<T>(objeto);
+            config.Context.SaveChanges();
+        }
+
+        [Theory]
+        [InlineData(Core.Model.TipoUsuario.Administradora)]
+        [InlineData(Core.Model.TipoUsuario.Sindico)]
+        [InlineData(Core.Model.TipoUsuario.Zelador)]
+        public async void MensagemEnviadaCorretamente(Core.Model.TipoUsuario tipoUsuario)
         {
             var administradora = GerarAdministradora();
-            Salvar(administradora);
-            Assert.True(administradora.Id > 0);
-
             var condominio = GerarCondominio(administradora.Id);
-            Salvar(condominio);
-            Assert.True(condominio.Id > 0);
-
-            var usuarioAdministradora = GerarUsuario(condominio.Id, Core.Model.TipoUsuario.Administradora);
-            Salvar(usuarioAdministradora);
-            Assert.True(usuarioAdministradora.Id > 0);
-
+            var usuarioDestino = GerarUsuario(condominio.Id, tipoUsuario);
             var usuarioMorador = GerarUsuario(condominio.Id, Core.Model.TipoUsuario.Morador);
-            Salvar(usuarioMorador);
-            Assert.True(usuarioMorador.Id > 0);
 
-            var mensagem = $"Mensagem usuario {usuarioMorador.Id} para usuario {usuarioAdministradora.Id}.";
+            if (tipoUsuario != Core.Model.TipoUsuario.Administradora)
+            {
+                condominio.IdResponsavel = usuarioDestino.Id;
+                config.Context.Condominios.Update(condominio);
+                config.Context.SaveChanges();
+            }
 
-            var response = await Init.ComunicacaoBusiness
+            var mensagem = $"Mensagem usuário morador {usuarioMorador.Id} para usuario {usuarioDestino.Id}.";
+
+            var response = await config.ComunicacaoBusiness
                 .EnviarComunicadoAsync(new Core.Business.Wraps.BaseRequest<Core.Business.DTOs.Comunicado>(
-                    new Core.Business.DTOs.Comunicado {
-                        Assunto = Core.Model.Assunto.Administrativo.ToString(),
+                    new Core.Business.DTOs.Comunicado
+                    {
+                        Assunto = (tipoUsuario == Core.Model.TipoUsuario.Administradora
+                            ? Core.Model.Assunto.Administrativo.ToString()
+                            : Core.Model.Assunto.Condominial.ToString()),
                         IdUsuario = usuarioMorador.Id,
                         Mensagem = mensagem
                     }));
 
             Assert.True(response.Success, response.Message);
-            //Verificar mensagem
+
+            //Validar mensagem
         }
 
-        private void Salvar<T>(T objeto) where T : class
-        {
-            Init.Context.Set<T>().Add(objeto);
-            Init.Context.SaveChanges();
-        }
-
-        [Fact]
-        public async void MensagemCondominialEnviadaCorretamente()
-        {
-            var administradora = GerarAdministradora();
-            var condominio = GerarCondominio(administradora.Id);
-            var usuarioSindico = GerarUsuario(condominio.Id, Core.Model.TipoUsuario.Sindico);
-            var usuarioMorador = GerarUsuario(condominio.Id, Core.Model.TipoUsuario.Morador);
-        }
-
-        private static Core.Model.Usuario GerarUsuario(int idCondominio, Core.Model.TipoUsuario tipoUsuario)
+        private Core.Model.Usuario GerarUsuario(int idCondominio, Core.Model.TipoUsuario tipoUsuario)
         {
             var usuario = new Core.Model.Usuario
             {
                 IdCondominio = idCondominio,
                 Tipo = tipoUsuario,
-                Nome = $"Usuario Teste {DateTime.Now.Ticks}"
+                Nome = $"Usuario {tipoUsuario.ToString()} {DateTime.Now.Ticks}"
             };
 
-            Init.Context.Usuarios.Add(usuario);
-            Init.Context.SaveChanges();
+            config.Context.Usuarios.Add(usuario);
+            config.Context.SaveChanges();
 
             return usuario;
         }
 
-        private static Core.Model.Condominio GerarCondominio(int idAdministradora)
+        private Core.Model.Condominio GerarCondominio(int idAdministradora)
         {
             var condominio = new Core.Model.Condominio
             {
@@ -79,28 +80,28 @@ namespace AplicacaoCondominial.Test.Business
                 Nome = $"Condomínio Teste {DateTime.Now.Ticks}"
             };
 
-            Init.Context.Condominios.Add(condominio);
-            Init.Context.SaveChanges();
+            config.Context.Condominios.Add(condominio);
+            config.Context.SaveChanges();
 
-            Assert.Single(Init.Context.Condominios
+            Assert.Single(config.Context.Condominios
                     .Where(c => c.Id == condominio.Id)
                     .ToList());
 
             return condominio;
         }
 
-        private static Core.Model.Administradora GerarAdministradora()
+        private Core.Model.Administradora GerarAdministradora()
         {
             var administradora = new Core.Model.Administradora
             {
                 Nome = "Administradora Comunicacao"
             };
 
-            Init.Context.Administradoras.Add(administradora);
-            Init.Context.SaveChanges();
+            config.Context.Administradoras.Add(administradora);
+            config.Context.SaveChanges();
 
-            Assert.Single(Init.Context.Administradoras
-                    .Where(a => a.Id == administradora.Id)
+            Assert.Single(config.Context.Administradoras
+                    .Where(a => a.Id == administradora.Id && a.Id > 0)
                     .ToList());
 
             return administradora;

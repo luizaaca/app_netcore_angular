@@ -1,0 +1,60 @@
+﻿<div class="container-fluid">
+    <h1>Usuarios</h1>
+    <div class="row">
+        <p *ngIf="!usuarios"><em>Loading...</em></p>
+
+        <table class='table' *ngIf="usuarios">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nome</th>
+                    <th>Condominio</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let usu of usuarios">
+                    <td>{{ usu.id }}</td>
+                    <td>{{ usu.nome }}</td>
+                    <td>{{ usu.idCondominio }}</td>
+                    <td>{{ usu.tipo.nome }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <fieldset>
+            <legend>Novo usuario</legend>
+            <form>
+                <div class="row form-group">
+                    <label class="col-sm-3">Condominios</label>
+                    <div class="col-sm-6">
+                        <select [(ngModel)]="condominio" [ngModelOptions]="{standalone: true}" class="form-control">
+                            <option value="0">Selecione</option>
+                            <option *ngFor="let cond of condominios" value="{{ cond.id }}">{{ cond.nome }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-sm-3">Tipo</label>
+                    <div class="col-sm-6">
+                        <select [(ngModel)]="tipo" [ngModelOptions]="{standalone: true}" class="form-control">
+                            <option value="0">Selecione</option>
+                            <option value="1">Morador</option>
+                            <option value="2">Sindico</option>
+                            <option value="3">Administradora</option>
+                            <option value="4">Zelador</option>                           
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-sm-3">Nome</label>
+                    <div class="col-sm-6">
+                        <input [(ngModel)]="nome" [ngModelOptions]="{standalone: true}" type="text" class="form-control" required />
+                    </div>
+                </div>
+                <button (click)="salvarUsuario()" class="btn btn-default">Salvar</button>
+            </form>
+        </fieldset>
+    </div>
+</div>

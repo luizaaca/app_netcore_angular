@@ -1,11 +1,11 @@
-﻿using Core.Repository.Abstractions;
+﻿using System.Threading.Tasks;
 using Core.Model;
-using System.Threading.Tasks;
+using Core.Repository.Abstractions;
 
 namespace Core.Repository
 {
     public interface IUsuarioRepository : IRepository<Usuario, int>
     {
-        Task<Usuario> FindUsuarioCompletoAsync(int id);
+        Task<Usuario> FindUsuarioAsync(int id);
     }
 }

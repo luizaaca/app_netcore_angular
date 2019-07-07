@@ -8,26 +8,33 @@ namespace AplicacaoCondominial.Test.Business
 {
     public class ConfiguracaoTest
     {
+        Config config;
+
+        public ConfiguracaoTest()
+        {
+            config = new Config();
+        }
+
         #region .: Condominio :.
 
         [Fact]
         public async void CondominioNaoCadastraSemNome()
         {
             var administradora = GerarAdministradora();
-            var response = await Init.ConfiguracaoBusiness
+            var response = await config.ConfiguracaoBusiness
                 .SalvarCondominioAsync(new BaseRequest<Condominio>(new Condominio
                 {
                     IdAdministradora = administradora.Id
                 }));
 
             Assert.False(response.Success, "O método deveria retornar sem sucesso.");
-            Assert.Empty(Init.Context.Condominios.Where(c => c.Nome == null).ToList());
+            Assert.Empty(config.Context.Condominios.Where(c => c.Nome == null).ToList());
         }
 
         [Fact]
         public async void CondominioNaoCadastraSemAdministradora()
         {
-            var response = await Init.ConfiguracaoBusiness.SalvarCondominioAsync(
+            var response = await config.ConfiguracaoBusiness.SalvarCondominioAsync(
                 new BaseRequest<Condominio>(
                     new Condominio
                     {
@@ -35,7 +42,7 @@ namespace AplicacaoCondominial.Test.Business
                     }));
 
             Assert.False(response.Success, "O método deveria retornar sem sucesso.");
-            Assert.Empty(Init.Context.Condominios
+            Assert.Empty(config.Context.Condominios
                                 .Where(c => c.Nome == "Condomínio Teste 1")
                                 .ToList());
         }
@@ -45,7 +52,7 @@ namespace AplicacaoCondominial.Test.Business
         {
             var administradora = GerarAdministradora();
 
-            var response = await Init.ConfiguracaoBusiness.SalvarCondominioAsync(
+            var response = await config.ConfiguracaoBusiness.SalvarCondominioAsync(
                 new BaseRequest<Condominio>(
                     new Condominio
                     {
@@ -55,7 +62,7 @@ namespace AplicacaoCondominial.Test.Business
 
             Assert.True(response.Success, response.Message);
 
-            var condominios = Init.Context.Condominios
+            var condominios = config.Context.Condominios
                                 .Where(c => c.Nome == "Condomínio Teste 2"
                                             && c.IdAdministradora == administradora.Id)
                                 .ToList();
@@ -68,7 +75,7 @@ namespace AplicacaoCondominial.Test.Business
         {
             var condominio = GerarCondominio();
 
-            var response = await Init.ConfiguracaoBusiness
+            var response = await config.ConfiguracaoBusiness
                 .BuscarCondominioAsync(new BaseRequest<int>(condominio.Id));
 
             Assert.True(response.Success, response.Message);
@@ -89,7 +96,7 @@ namespace AplicacaoCondominial.Test.Business
         {
             var condominio = GerarCondominio();
 
-            var response = await Init.ConfiguracaoBusiness
+            var response = await config.ConfiguracaoBusiness
                 .SalvarUsuarioAsync(new BaseRequest<Usuario>(new Usuario
                 {
                     IdCondominio = condominio.Id,
@@ -97,7 +104,7 @@ namespace AplicacaoCondominial.Test.Business
                 }));
 
             Assert.False(response.Success, "O método deveria retornar sem sucesso.");
-            Assert.Empty(Init.Context.Usuarios.Where(u => u.Nome == null).ToList());
+            Assert.Empty(config.Context.Usuarios.Where(u => u.Nome == null).ToList());
         }
 
         [Fact]
@@ -105,7 +112,7 @@ namespace AplicacaoCondominial.Test.Business
         {
             var nome = $"Joao Ferreira {DateTime.Now.Ticks}";
 
-            var response = await Init.ConfiguracaoBusiness
+            var response = await config.ConfiguracaoBusiness
                 .SalvarUsuarioAsync(new BaseRequest<Usuario>(new Usuario
                 {
                     Nome = nome,
@@ -113,7 +120,7 @@ namespace AplicacaoCondominial.Test.Business
                 }));
 
             Assert.False(response.Success, "O método deveria retornar sem sucesso.");
-            Assert.Empty(Init.Context.Usuarios
+            Assert.Empty(config.Context.Usuarios
                             .Where(u => u.IdCondominio == 0 && u.Nome == nome).ToList());
         }
 
@@ -124,7 +131,7 @@ namespace AplicacaoCondominial.Test.Business
         {
             var nome = $"Joao Ferreira {DateTime.Now.Ticks}";
 
-            var response = await Init.ConfiguracaoBusiness
+            var response = await config.ConfiguracaoBusiness
                 .SalvarUsuarioAsync(new BaseRequest<Usuario>(new Usuario
                 {
                     Nome = nome,
@@ -133,7 +140,7 @@ namespace AplicacaoCondominial.Test.Business
                 }));
 
             Assert.False(response.Success, "O método deveria retornar sem sucesso.");
-            Assert.Empty(Init.Context.Usuarios
+            Assert.Empty(config.Context.Usuarios
                 .Where(u => u.Tipo < Core.Model.TipoUsuario.Morador
                 || u.Tipo > Core.Model.TipoUsuario.Zelador).ToList());
         }
@@ -152,12 +159,12 @@ namespace AplicacaoCondominial.Test.Business
                 Tipo = Core.Model.TipoUsuario.Sindico
             };
 
-            Init.Context.Usuarios.Add(usuario);
-            Init.Context.SaveChanges();
+            config.Context.Usuarios.Add(usuario);
+            config.Context.SaveChanges();
 
-            Assert.Single(Init.Context.Usuarios.Where(u => u.Id == usuario.Id && u.Id > 0));
+            Assert.Single(config.Context.Usuarios.Where(u => u.Id == usuario.Id && u.Id > 0));
 
-            var response = await Init.ConfiguracaoBusiness
+            var response = await config.ConfiguracaoBusiness
                 .BuscarUsuarioAsync(new BaseRequest<int>(usuario.Id));
 
             Assert.True(response.Success, response.Message);
@@ -167,27 +174,27 @@ namespace AplicacaoCondominial.Test.Business
                 && response.Result.Nome == nome
                 && response.Result.Tipo.Id == (byte)Core.Model.TipoUsuario.Sindico);
         }
-                
+
         #endregion
 
-        private static Core.Model.Administradora GerarAdministradora()
+        private Core.Model.Administradora GerarAdministradora()
         {
             var administradora = new Core.Model.Administradora
             {
                 Nome = $"Administradora 1 {DateTime.Now.Ticks}"
             };
 
-            Init.Context.Administradoras.Add(administradora);
-            Init.Context.SaveChanges();
+            config.Context.Administradoras.Add(administradora);
+            config.Context.SaveChanges();
 
-            Assert.Single(Init.Context.Administradoras
+            Assert.Single(config.Context.Administradoras
                     .Where(a => a.Id == administradora.Id)
                     .ToList());
 
             return administradora;
         }
 
-        private static Core.Model.Condominio GerarCondominio()
+        private Core.Model.Condominio GerarCondominio()
         {
             var condominio = new Core.Model.Condominio
             {
@@ -196,10 +203,10 @@ namespace AplicacaoCondominial.Test.Business
                 Nome = $"Condomínio Teste {DateTime.Now.Ticks}"
             };
 
-            Init.Context.Condominios.Add(condominio);
-            Init.Context.SaveChanges();
+            config.Context.Condominios.Add(condominio);
+            config.Context.SaveChanges();
 
-            Assert.Single(Init.Context.Condominios
+            Assert.Single(config.Context.Condominios
                     .Where(c => c.Id == condominio.Id)
                     .ToList());
 

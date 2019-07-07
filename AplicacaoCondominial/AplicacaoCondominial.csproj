@@ -22,8 +22,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\app\components\comunicados\comunicados.component.ts" />
+    <None Remove="ClientApp\app\components\condominios\condominios.component.ts" />
+    <None Remove="ClientApp\app\components\usuarios\usuarios.component.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Repository.EF\Repository.EF.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\components\comunicados\comunicados.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\condominios\condominios.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\usuarios\usuarios.component.ts" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">

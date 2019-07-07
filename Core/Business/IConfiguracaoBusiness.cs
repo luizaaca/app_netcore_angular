@@ -13,7 +13,7 @@ namespace Core.Business
         Task<BaseResponse<IList<Assunto>>> ListarAssuntosAsync();
         Task<BaseResponse<Condominio>> BuscarCondominioAsync(BaseRequest<int> request);
         Task<BaseResponse<Usuario>> BuscarUsuarioAsync(BaseRequest<int> request);
-        Task<BaseResponse> SalvarCondominioAsync(BaseRequest<Condominio> request);
-        Task<BaseResponse> SalvarUsuarioAsync(BaseRequest<Usuario> request);
+        Task<BaseResponse<int>> SalvarCondominioAsync(BaseRequest<Condominio> request);
+        Task<BaseResponse<int>> SalvarUsuarioAsync(BaseRequest<Usuario> request);
     }
 }

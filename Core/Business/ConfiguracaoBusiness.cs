@@ -144,7 +144,9 @@ namespace Core.Business
                     .Select(c => new Condominio
                     {
                         Id = c.Id,
-                        Nome = c.Nome
+                        Nome = c.Nome,
+                        IdAdministradora = c.IdAdministradora,
+                        IdResponsavel = c.IdResponsavel
                     })
                     .ToList();
             }
@@ -170,7 +172,13 @@ namespace Core.Business
                     .Select(u => new Usuario
                     {
                         Id = u.Id,
-                        Nome = u.Nome
+                        Nome = u.Nome,
+                        IdCondominio = u.IdCondominio,
+                        Tipo = new TipoUsuario
+                        {
+                            Id = (byte)u.Tipo,
+                            Nome = u.Tipo.ToString()
+                        }
                     })
                     .ToList();
             }
@@ -184,9 +192,9 @@ namespace Core.Business
             return response;
         }
 
-        public async Task<BaseResponse> SalvarCondominioAsync(BaseRequest<Condominio> request)
+        public async Task<BaseResponse<int>> SalvarCondominioAsync(BaseRequest<Condominio> request)
         {
-            var response = new BaseResponse();
+            var response = new BaseResponse<int>();
 
             try
             {
@@ -213,12 +221,11 @@ namespace Core.Business
                 condominio.IdResponsavel = request.Value.IdResponsavel;
                 condominio.Nome = request.Value.Nome ?? throw new ArgumentException("O nome do condomínio deve ser preenchido.");
 
-                if (condominio.Id == 0)
-                    _condominioRepository.Add(condominio);
-                else
-                    _condominioRepository.Save(condominio);
+                _condominioRepository.Save(condominio);
 
                 await _condominioRepository.CommitAsync();
+
+                response.Result = condominio.Id;
             }
             catch (Exception ex)
             {
@@ -230,9 +237,9 @@ namespace Core.Business
             return response;
         }
 
-        public async Task<BaseResponse> SalvarUsuarioAsync(BaseRequest<Usuario> request)
+        public async Task<BaseResponse<int>> SalvarUsuarioAsync(BaseRequest<Usuario> request)
         {
-            var response = new BaseResponse();
+            var response = new BaseResponse<int>();
 
             try
             {
@@ -256,12 +263,11 @@ namespace Core.Business
                 else
                     throw new ArgumentException("O campo tipo de usuário informado é inválido.");
 
-                if (usuario.Id == 0)
-                    _usuarioRepository.Add(usuario);
-                else
-                    _usuarioRepository.Save(usuario);
+                _usuarioRepository.Save(usuario);
 
                 await _usuarioRepository.CommitAsync();
+
+                response.Result = usuario.Id;
             }
             catch (Exception ex)
             {

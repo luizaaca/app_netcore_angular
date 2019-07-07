@@ -1,5 +1,6 @@
 ﻿using Core.Business.DTOs;
 using Core.Business.Wraps;
+using Core.Infrastructure.Querying;
 using Core.Repository;
 using System;
 using System.IO;
@@ -38,10 +39,10 @@ namespace Core.Business
                 if (string.IsNullOrWhiteSpace(request.Value.Mensagem))
                     throw new ArgumentException($"O campo mensagem deve ser preenchido.", nameof(request.Value.Mensagem));
 
-                var usuario = await _usuarioRepository.FindUsuarioCompletoAsync(request.Value.IdUsuario);
+                var usuario = await _usuarioRepository.FindUsuarioAsync(request.Value.IdUsuario);
 
                 if (usuario == null)
-                    throw new ApplicationException("O usuário informado não está cadastrado na base de dados.");
+                    throw new ApplicationException("O usuário morador informado não está cadastrado na base de dados.");
 
                 if (!Enum.GetValues(typeof(Model.Assunto))
                     .Cast<Model.Assunto>()
@@ -50,18 +51,51 @@ namespace Core.Business
                     throw new ApplicationException("O tipo de comunicado informado é inválido.");
 
 
-                using (StreamWriter writer = new StreamWriter(PATH))
+                using (StreamWriter writer = File.AppendText(PATH))
                 {
                     await writer.WriteLineAsync(Environment.NewLine);
                     await writer.WriteLineAsync($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} - Condomínio {usuario.Condominio.Nome}");
 
                     if (request.Value.Assunto == Model.Assunto.Administrativo.ToString())
-                        await writer.WriteLineAsync($"Mensagem de {usuario.Nome} para Administradora {usuario.Condominio.Administradora.Nome}");
+                    {
+                        var usuarioAdministradora = (await _usuarioRepository
+                            .FindByAsync(new Query<Model.Usuario>(u
+                                => u.IdCondominio == usuario.IdCondominio
+                                && u.Tipo == Model.TipoUsuario.Administradora)))
+                            .FirstOrDefault();
+
+                        if(usuarioAdministradora == null)
+                            throw new ApplicationException("O usuário administrador do condominio não está cadastrado na base de dados.");
+
+                        await writer.WriteLineAsync($"Mensagem de {usuario.Nome} para Administradora {usuarioAdministradora.Nome}");
+                    }
                     else
-                        await writer.WriteLineAsync($"Mensagem de {usuario.Nome} para o {usuario.Condominio.Responsavel.Tipo.ToString()}  {usuario.Condominio.Responsavel.Nome}");
+                    {
+                        var responsavel = await _usuarioRepository
+                            .FindByAsync(usuario.Condominio.IdResponsavel);
+
+                        if (responsavel == null)
+                            responsavel = (await _usuarioRepository
+                                .FindByAsync(new Query<Model.Usuario>(u
+                                    => u.IdCondominio == usuario.IdCondominio
+                                    && u.Tipo == Model.TipoUsuario.Sindico)))
+                                .FirstOrDefault();
+
+                        if (responsavel == null)
+                            responsavel = (await _usuarioRepository
+                                .FindByAsync(new Query<Model.Usuario>(u
+                                    => u.IdCondominio == usuario.IdCondominio
+                                    && u.Tipo == Model.TipoUsuario.Zelador)))
+                                .FirstOrDefault();
+
+                        if (responsavel == null)
+                            throw new ApplicationException("O usuário responsável não está cadastrado na base de dados.");
+
+                        await writer.WriteLineAsync($"Mensagem de {usuario.Nome} para o {responsavel.Tipo.ToString()} {responsavel.Nome}");
+                    }
 
                     await writer.WriteLineAsync(request.Value.Mensagem);
-                }    
+                }
             }
             catch (Exception ex)
             {

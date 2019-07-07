@@ -1,0 +1,35 @@
+﻿<div class="container-fluid">
+    <br />
+    <div class="row">
+        <fieldset>
+            <legend>Novo comunicado</legend>
+            <form>
+                <div class="row form-group">
+                    <label class="col-sm-3">Usuarios</label>
+                    <div class="col-sm-6">
+                        <select [(ngModel)]="usuario" [ngModelOptions]="{standalone: true}" class="form-control">
+                            <option value="0">Selecione</option>
+                            <option *ngFor="let usu of usuarios" value="{{ usu.id }}">{{ usu.nome }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-sm-3">Assunto</label>
+                    <div class="col-sm-6">
+                        <select [(ngModel)]="assunto" [ngModelOptions]="{standalone: true}" class="form-control">
+                            <option value="0">Selecione</option>
+                            <option *ngFor="let ass of assuntos" value="{{ ass.descricao }}">{{ ass.descricao }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-sm-3">Mensagem</label>
+                    <div class="col-sm-8">
+                        <input [(ngModel)]="mensagem" [ngModelOptions]="{standalone: true}" type="text" class="form-control" required />
+                    </div>
+                </div>
+                <button (click)="enviarComunicado()" class="btn btn-default">Enviar</button>
+            </form>
+        </fieldset>
+    </div>
+</div>

@@ -1,17 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Core.Business;
+using Core.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repository.EF.Configuration;
-using Microsoft.EntityFrameworkCore;
-using Core.Repository;
 using Repository.EF.Repository;
-using Core.Business;
+using System;
 
 namespace AplicacaoCondominial
 {
