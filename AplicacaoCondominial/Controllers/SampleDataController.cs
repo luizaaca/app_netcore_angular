@@ -10,13 +10,6 @@ namespace AplicacaoCondominial.Controllers
     [Route("api/[controller]")]
     public class SampleDataController : Controller
     {
-        IConfiguracaoBusiness _configuracaoBusiness;
-
-        public SampleDataController(IConfiguracaoBusiness configuracaoBusiness)
-        {
-            _configuracaoBusiness = configuracaoBusiness;
-        }
-
         private static string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -47,12 +40,6 @@ namespace AplicacaoCondominial.Controllers
                     return 32 + (int)(TemperatureC / 0.5556);
                 }
             }
-        }
-
-        [HttpGet("[action]")]
-        public async Task<IEnumerable<Core.Business.DTOs.Administradora>> Administradoras()
-        {
-            return (await _configuracaoBusiness.ListarAdministradorasAsync()).Result;
-        }
+        }        
     }
 }

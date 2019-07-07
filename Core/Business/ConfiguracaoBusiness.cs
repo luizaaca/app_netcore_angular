@@ -36,7 +36,9 @@ namespace Core.Business
                 response.Result = new Condominio
                 {
                     Id = result.Id,
-                    Nome = result.Nome
+                    Nome = result.Nome,
+                    IdAdministradora = result.IdAdministradora,
+                    IdResponsavel = result.IdResponsavel
                 };
             }
             catch (Exception ex)
@@ -65,7 +67,8 @@ namespace Core.Business
                     {
                         Id = (byte)result.Tipo,
                         Nome = result.Tipo.ToString()
-                    }
+                    },
+                    IdCondominio = result.IdCondominio
                 };
             }
             catch (Exception ex)
@@ -110,7 +113,7 @@ namespace Core.Business
 
             try
             {
-                response.Result = 
+                response.Result =
                     Enum.GetValues(typeof(Model.Assunto))
                     .Cast<Model.Assunto>()
                     .Select(a => new Assunto
@@ -195,18 +198,20 @@ namespace Core.Business
                 if (condominio == null)
                     condominio = new Model.Condominio();
 
-                condominio.IdAdministradora = request.Value.IdAdministradora;
+                var administradora = await _administradoraRepository
+                    .FindByAsync(request.Value.IdAdministradora);
+
+                condominio.IdAdministradora = administradora?.Id ??
+                    throw new ArgumentException("A administradora informada não foi encontrada na base de dados.");
 
                 var responsavel = await _usuarioRepository.FindByAsync(request.Value.IdResponsavel);
 
-                if (responsavel == null)
-                    throw new ApplicationException("O responsável informado não foi encontrado na base.");
-
-                if (!new Model.TipoUsuario[] { Model.TipoUsuario.Zelador, Model.TipoUsuario.Sindico }.Contains(responsavel.Tipo))
-                    throw new ApplicationException("O usuário informado não pode ser atribuido como responsável de um condomínio.");
+                if (responsavel != null)
+                    if (!new Model.TipoUsuario[] { Model.TipoUsuario.Zelador, Model.TipoUsuario.Sindico }.Contains(responsavel.Tipo))
+                        throw new ApplicationException("O usuário informado não pode ser atribuido como responsável de um condomínio.");
 
                 condominio.IdResponsavel = request.Value.IdResponsavel;
-                condominio.Nome = request.Value.Nome;
+                condominio.Nome = request.Value.Nome ?? throw new ArgumentException("O nome do condomínio deve ser preenchido.");
 
                 if (condominio.Id == 0)
                     _condominioRepository.Add(condominio);
@@ -244,11 +249,11 @@ namespace Core.Business
                     throw new ApplicationException("O condomínio informado não foi encontrado na base de dados.");
 
                 usuario.IdCondominio = request.Value.IdCondominio;
-                usuario.Nome = request.Value.Nome;
+                usuario.Nome = request.Value.Nome ?? throw new ArgumentException("O campo nome deve ser informado.");
 
                 if (Enum.IsDefined(typeof(Model.TipoUsuario), request.Value.Tipo.Id))
                     usuario.Tipo = (Model.TipoUsuario)request.Value.Tipo.Id;
-                else if (request.Value.Tipo.Id > 0)
+                else
                     throw new ArgumentException("O campo tipo de usuário informado é inválido.");
 
                 if (usuario.Id == 0)
