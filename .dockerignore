@@ -1,0 +1,3 @@
+*
+!AplicacaoCondominial/obj/Docker/publish/*
+!AplicacaoCondominial/obj/Docker/empty/
